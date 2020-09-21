@@ -24,7 +24,7 @@ Trackpoint = namedtuple("Trackpoint", ("latitude", "longtitude", "altitude", "da
 Activity = namedtuple("Activity", ("start_date_time", "end_date_time", "transportation_mode", "trackpoints"))
 
 def create_trackpoint(lat, longt, alt, date, time):
-    return Trackpoint(float(lat), float(longt), int(alt), parse_tp_date_time(date, time))
+    return Trackpoint(float(lat), float(longt), float(alt), parse_tp_date_time(date, time))
 
 def create_activity(line):
     start_date_time, end_date_time, activity = line.strip().split("\t")
@@ -37,12 +37,16 @@ def trackpoint_from_line(line):
     data = line.strip().split(",")
     return create_trackpoint(*(data[i] for i in trackpoint_data_indices))
 
+def extract_trackpoint_data(line):
+    data = line.strip().split(",")
+    return data[:2]  + [data[3]] + [" ".join(data[-2:])]
+
 users = [User(i, False, {}) for i in range(num_users)]
 with open("dataset/labeled_ids.txt", mode="r") as labels_file:
     for uid in map(int, labels_file.readlines()):
         users[uid] = User(uid, True, {})
 
-for user in users[10:11]:
+for user in users:
     print(user)
     trackpoints_path = get_trackpoints_path(user.id)
     trackpoint_files = os.listdir(trackpoints_path)
@@ -65,6 +69,6 @@ for user in users[10:11]:
                 activity = activity_from_trackpoints(first_trackpoint, trackpoint_from_line(lines[-1]))
                 activities[activity.start_date_time] = activity
                 trackpoints = activity.trackpoints
-            trackpoints += lines
+            trackpoints += map(extract_trackpoint_data, lines)
 
     user.activities.update(activities)
