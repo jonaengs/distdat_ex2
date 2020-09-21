@@ -1,5 +1,5 @@
 import mysql.connector as mysql
-
+from settings import *
 
 class DbConnector:
     """
@@ -15,10 +15,10 @@ class DbConnector:
     """
 
     def __init__(self,
-                 HOST="tdt4225-02.idi.ntnu.no",
-                 DATABASE="geolife_db",
-                 USER="gruppe2admin",
-                 PASSWORD="magnussitthemmeligepassord"):
+                 HOST=DB_HOST,
+                 DATABASE=DB_DATABASE,
+                 USER=DB_USER,
+                 PASSWORD=DB_PASSWORD):
         # Connect to the database
         try:
             self.db_connection = mysql.connect(host=HOST, database=DATABASE, user=USER, password=PASSWORD, port=3306)
