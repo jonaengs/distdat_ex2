@@ -33,8 +33,6 @@ trackpoint_table_settings = {
     "foreign_key": ("activity_id", activity_table_name)
 }
 
-tables_info = (
-    (user_table_name, user_table_settings),
-    (activity_table_name, activity_table_settings),
-    (trackpoint_table_name, trackpoint_table_settings),
-)
+all_table_names = (user_table_name, activity_table_name, trackpoint_table_name)
+all_table_settings = (user_table_settings, activity_table_settings, trackpoint_table_settings)
+tables_info = zip(all_table_names, all_table_settings)

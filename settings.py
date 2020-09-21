@@ -1,4 +1,6 @@
-local = False
+local = True  # bestemmer om du kobler deg til server eller lokal database
+commit = False  # bestemmer om endringer lagres
+
 
 if local:
     DB_HOST="localhost"
