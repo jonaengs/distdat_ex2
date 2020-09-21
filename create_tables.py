@@ -1,6 +1,8 @@
 from DbConnector import DbConnector
 from tabulate import tabulate
 
+from tables_metadata import *
+
 
 class TableCreator:
 
@@ -53,40 +55,18 @@ class TableCreator:
         rows = self.cursor.fetchall()
         print(tabulate(rows, headers=self.cursor.column_names))
 
-
 def main():
-    program = None
     try:
         program = TableCreator()
-        user_table = "User"
-        activity_table = "Activity"
-        trackpoint_table = "TrackPoint"
-        program.create_table(table_name=user_table,
-                             fields={
-                                 "id": "VARCHAR(3) NOT NULL PRIMARY KEY",
-                                 "has_labels": "BOOLEAN"}, auto_id=False)
-        program.show_create_table(table_name=user_table)
-        program.create_table(table_name=activity_table,
-                             fields={
-                                 "user_id": "VARCHAR(3)",
-                                 "transportation_mode": "VARCHAR(30)",
-                                 "start_date_time": "DATETIME NOT NULL",
-                                 "end_date_time": "DATETIME NOT NULL"},
-                             foreign_key=("user_id", user_table))
-        program.show_create_table(table_name=activity_table)
-        program.create_table(table_name=trackpoint_table,
-                             fields={
-                                 "activity_id": "INT",
-                                 "lat": "DOUBLE NOT NULL",
-                                 "lon": "DOUBLE NOT NULL",
-                                 "altitude": "INT NOT NULL",
-                                 "date_days": "DOUBLE NOT NULL",
-                                 "date_time": "DATETIME NOT NULL"
-                             },
-                             foreign_key=("activity_id", activity_table))
-        # program.drop_table(table_name=trackpoint_table)
-        # program.drop_table(table_name=activity_table)
-        # program.drop_table(table_name=user_table)
+
+        for table_name, table_settings in tables_info:
+            program.create_table(**table_settings)
+            program.show_create_table(table_name=table_name)
+
+        for table_name, _ in tables_info:
+            # program.drop_table(table_name=table_name)
+            pass
+
         # Check that the table is dropped
         program.show_tables()
     except Exception as e:
