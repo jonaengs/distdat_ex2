@@ -1,7 +1,8 @@
 from DbConnector import DbConnector
 from tabulate import tabulate
-from tables_metadata import all_table_names
+from tables_metadata import *
 
+connection = DbConnector()
 cursor = None
 
 def create_table(table_name, fields, foreign_key=(), auto_id=True):
@@ -54,3 +55,24 @@ def show_create_table(table_name):
     cursor.execute(query)
     rows = cursor.fetchall()
     print(tabulate(rows, headers=cursor.column_names))
+
+def insert_user(user):
+    fields = _convert_field_names(user_table_fields)
+    values = ", ".join((f"'{user.id:03}'", _convert_bool(user.has_labels)))
+    _insert(user_table_name, fields, values)
+
+def insert_activity(activity, uid):
+    fields = _convert_field_names(activity_table_fields)
+    values = f"'{uid:03}', "
+    values += ", ".join(f"'{getattr(activity, attr)}'" for attr in activity._fields[:-1])
+    _insert(activity_table_name, fields, values)
+
+def _insert(table, fields, values):
+    query = f"INSERT INTO {table} ({fields}) VALUES ({values})"
+    cursor.execute(query)
+
+def _convert_field_names(fields):
+    return ", ".join(field for field in fields)
+
+def _convert_bool(b):
+    return str(b).lower()

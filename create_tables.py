@@ -1,6 +1,7 @@
 from tables_metadata import *
-from settings import *
+import settings
 import db_functions as db_manager
+from parse_data import get_user_data
 
 def main():
     for table_name, table_settings in tables_info:
@@ -8,9 +9,18 @@ def main():
         db_manager.show_create_table(table_name=table_name)
 
     # db_manager.drop_all_tables()
-
     db_manager.show_tables()
-    if commit:
+
+    print("-------- Inserting user data --------")
+    for user in get_user_data():
+        db_manager.insert_user(user)
+        for activity in user.activities:
+            db_manager.insert_activity(activity, user.id)
+            activity_id = cursor.lastrowid
+            # db_manager.insert_trackpoints(activity.trackpoints, activity_id)
+        print(f"Insert user {user.id} data ok")
+
+    if settings.commit:
         db_connection.commit()
 
 if __name__ == '__main__':

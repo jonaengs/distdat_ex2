@@ -6,17 +6,18 @@ from datetime import datetime
 from utils import *
 
 def create_trackpoint(lat, longt, alt, date_time):
-    return Trackpoint(float(lat), float(longt), float(alt), parse_tp_date_time(date_time))
+    return Trackpoint(float(lat), float(longt), int(float(alt)), parse_tp_date_time(date_time))
 
 def create_string_trackpoint(line):
     return Trackpoint(*extract_trackpoint_data(line))
 
 def create_activity(line):
     start_date_time, end_date_time, activity = line.strip().split("\t")
-    return Activity(parse_label_date_time(start_date_time), parse_label_date_time(end_date_time), activity, [])
+    activity = activity if activity else "N/A"
+    return Activity(activity, parse_label_date_time(start_date_time), parse_label_date_time(end_date_time), [])
 
 def activity_from_trackpoints(first, last):
-    return Activity(first.datetime, last.datetime, "N/A", [])
+    return Activity("N/A", first.datetime, last.datetime, [])
 
 def trackpoint_from_line(line):
     return create_trackpoint(*extract_trackpoint_data(line))
@@ -26,10 +27,10 @@ def extract_trackpoint_data(line):
     return data[:2]  + [data[3]] + [" ".join(data[-2:])]
 
 def get_users():
-    users = [User(i, False, {}) for i in range(num_users)]
+    users = [User(i, False, []) for i in range(num_users)]
     with open("dataset/labeled_ids.txt", mode="r") as labels_file:
         for uid in map(int, labels_file.readlines()):
-            users[uid] = User(uid, True, {})
+            users[uid] = User(uid, True, [])
     return users
 
 def get_user_data():
@@ -61,5 +62,5 @@ def get_user_data():
                         activities[activity.start_date_time] = activity
                         trackpoints = activity.trackpoints
                     trackpoints += map(create_string_trackpoint, lines)
-        user.activities.update(activities)
+        user.activities.extend([a for a in activities.values() if a.trackpoints])
         yield user
