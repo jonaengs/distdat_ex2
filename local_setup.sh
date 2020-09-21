@@ -19,9 +19,10 @@ sudo mysql -uroot -p${PASSWORD} -e "FLUSH PRIVILEGES;"
 sudo service mysql restart
 
 # Fiks python
-sudo apt install python3 python3-pip
-python -m pip install virtualenv
-python -m virtualenv venv
+sudo apt-get upgrade python3
+sudo apt installpython3-pip
+python3 -m pip install virtualenv
+python3 -m virtualenv venv
 . venv/bin/activate
 pip install -r requirements.txt
 export PYTHONDONTWRITEBYTECODE=1  # ikke lag .pyc-filer
