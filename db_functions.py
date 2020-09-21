@@ -67,6 +67,10 @@ def insert_activity(activity, uid):
     values += ", ".join(f"'{getattr(activity, attr)}'" for attr in activity._fields[:-1])
     _insert(activity_table_name, fields, values)
 
+def insert_trackpoints(trackpoints, aid):
+    # batch/bulk insert: https://stackoverflow.com/questions/5526917/how-to-do-a-batch-insert-in-mysql
+    pass
+
 def _insert(table, fields, values):
     query = f"INSERT INTO {table} ({fields}) VALUES ({values})"
     cursor.execute(query)

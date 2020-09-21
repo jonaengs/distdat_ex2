@@ -17,7 +17,7 @@ def main():
         for activity in user.activities:
             db_manager.insert_activity(activity, user.id)
             activity_id = cursor.lastrowid
-            # db_manager.insert_trackpoints(activity.trackpoints, activity_id)
+            db_manager.insert_trackpoints(activity.trackpoints, activity_id)
         print(f"Insert user {user.id} data ok")
 
     if settings.commit:
