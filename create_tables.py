@@ -4,13 +4,12 @@ import db_functions as db_manager
 from parse_data import get_user_data
 
 def main():
+    if settings.drop_tables:
+        db_manager.drop_all_tables()
+
     for table_name, table_settings in tables_info:
         db_manager.create_table(**table_settings)
         db_manager.show_create_table(table_name=table_name)
-
-    db_manager.show_tables()
-    if settings.commit:
-        db_manager.drop_all_tables()
 
     print("-------- Inserting user data --------")
     for user in get_user_data(10):
