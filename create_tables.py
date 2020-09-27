@@ -8,11 +8,12 @@ def main():
         db_manager.create_table(**table_settings)
         db_manager.show_create_table(table_name=table_name)
 
-    # db_manager.drop_all_tables()
     db_manager.show_tables()
+    if settings.commit:
+        db_manager.drop_all_tables()
 
     print("-------- Inserting user data --------")
-    for user in get_user_data(1):
+    for user in get_user_data(10):
         db_manager.insert_user(user)
         for activity in user.activities:
             db_manager.insert_activity(activity, user.id)
