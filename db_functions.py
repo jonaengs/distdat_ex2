@@ -5,6 +5,9 @@ from tables_metadata import *
 connection = DbConnector()
 cursor = None
 
+def commit():
+    connection.db_connection.commit()
+
 def create_table(table_name, fields, foreign_key=(), auto_id=True):
     """
     :param fields: {"field_name": "DATATYPE [NOT NULL]", ...}

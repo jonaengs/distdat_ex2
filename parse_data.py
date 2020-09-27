@@ -26,15 +26,15 @@ def extract_trackpoint_data(line):
     data = line.strip().split(",")
     return data[:2]  + [data[3]] + [" ".join(data[-2:])]
 
-def get_users():
+def get_users(max_count=None):
     users = [User(i, False, []) for i in range(num_users)]
     with open("dataset/labeled_ids.txt", mode="r") as labels_file:
         for uid in map(int, labels_file.readlines()):
             users[uid] = User(uid, True, [])
-    return users
+    return users[:max_count if max_count else length(users)]
 
-def get_user_data():
-    for user in get_users():
+def get_user_data(max_count=None):
+    for user in get_users(max_count):
         trackpoints_path = get_trackpoints_path(user.id)
         trackpoint_files = os.listdir(trackpoints_path)
         if user.has_labels:

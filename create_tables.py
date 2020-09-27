@@ -12,7 +12,7 @@ def main():
     db_manager.show_tables()
 
     print("-------- Inserting user data --------")
-    for user in get_user_data():
+    for user in get_user_data(1):
         db_manager.insert_user(user)
         for activity in user.activities:
             db_manager.insert_activity(activity, user.id)
@@ -21,7 +21,7 @@ def main():
         print(f"Insert user {user.id} data ok")
 
     if settings.commit:
-        db_connection.commit()
+        db_manager.commit()
 
 if __name__ == '__main__':
     with db_manager.connection as cursor:
