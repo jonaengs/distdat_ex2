@@ -41,7 +41,7 @@ def get_users(max_count=None):
     with open("../dataset/labeled_ids.txt", mode="r") as labels_file:
         for uid in map(int, labels_file.readlines()):
             users[uid] = User(uid, True, [])
-    return users[:max_count if max_count else len(users)]
+    return users[:max_count if max_count is not None else len(users)]
 
 def get_user_data(max_count=None):
     for user in get_users(max_count):

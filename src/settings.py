@@ -1,3 +1,5 @@
+from tables_metadata import user_table_name, activity_table_name, trackpoint_table_name
+
 # bestemmer om du kobler deg til server eller lokal database
 local = False
 
@@ -14,11 +16,15 @@ altitude_default_value = "NULL"
 # Activity transportation mode default/missing value
 activity_tranportation_mode_default = "NULL"
 
+""" NOTE: 
+To get activity IDs to work correctly, we actually still execute the activity and user insertions, 
+since these are only a small portion of the total data anyways. 
+So every query is stored, but only trackpoint insertions are not executed when saving query 
+"""
 # Set to True to save all queries to a file instead of executing them
 save_queries = True  # atm, queries are only saved if they are not read from file
 read_queries_from_file = True
 queries_file_path = "../queries/all_queries"
-
 
 if local:
     DB_HOST="localhost"

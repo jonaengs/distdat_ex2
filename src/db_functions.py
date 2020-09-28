@@ -63,16 +63,15 @@ def show_create_table(table_name):
 def insert_user(user):
     fields = _convert_field_names(user_table_fields)
     values = ", ".join((f"'{user.id:03}'", _convert_bool(user.has_labels)))
-    _insert(user_table_name, fields, values)
+    _insert(user_table_name, fields, values, both=True)
 
 def insert_activity(activity, uid):
     fields = _convert_field_names(activity_table_fields)
     values = f"'{uid:03}', "
     values += ", ".join(f"'{getattr(activity, attr)}'" for attr in activity._fields[:-1])
-    _insert(activity_table_name, fields, values)
+    _insert(activity_table_name, fields, values, both=True)
 
 def insert_trackpoints(trackpoints, aid):
-    # batch/bulk insert: https://stackoverflow.com/questions/5526917/how-to-do-a-batch-insert-in-mysql
     tp_to_string = lambda tp: f"({aid}, {_convert_field_names(tp)})"
     fields = _convert_field_names(trackpoint_table_fields)
     tp_data = ", ".join(map(tp_to_string, trackpoints))
@@ -84,17 +83,19 @@ def _convert_field_names(fields):
 def _convert_bool(b):
     return str(b).lower()
 
-def _batch_insert(table, fields, values):
+def _batch_insert(table, fields, values, **kwargs):
     query = f"INSERT INTO {table} ({fields}) VALUES {values}"
-    _exec_query(query)
+    _exec_query(query, **kwargs)
 
-def _insert(table, fields, values):
+def _insert(table, fields, values, **kwargs):
     query = f"INSERT INTO {table} ({fields}) VALUES ({values})"
-    _exec_query(query)
+    _exec_query(query, **kwargs)
 
-def _exec_query(query):
+def _exec_query(query, both=False):
     if save_queries:
         save_query(query)
+        if both:
+            cursor.execute(query)
     else:
         cursor.execute(query)
 
@@ -102,8 +103,7 @@ def save_query(query):
     with open(queries_file_path, mode="a") as f:
         f.write(query + "\n")
 
-def exec_queries_from_file():
+def exec_saved_queries():
     with open(queries_file_path, mode="r") as f:
         for query in f.readlines():
             cursor.execute(query)
-            print("")

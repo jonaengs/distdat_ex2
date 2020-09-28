@@ -23,3 +23,9 @@ parse_fn_date_time = lambda fn: datetime.strptime(fn, fn_datetime_format)
 User = namedtuple("User", ("id", "has_labels", "activities"))
 Trackpoint = namedtuple("Trackpoint", ("latitude", "longtitude", "altitude", "datetime"))
 Activity = namedtuple("Activity", ("transportation_mode", "start_date_time", "end_date_time", "trackpoints"))
+
+def clear_file(filename):
+    print(f"Clearing file: {filename}")
+    f = open(filename, 'w')
+    f.truncate(0)
+    f.close()
