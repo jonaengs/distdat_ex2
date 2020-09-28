@@ -15,7 +15,7 @@ class QueryRunner:
                 """
         # This adds table_name to the %s variable and executes the query
         self.cursor.execute(query % table_name)
-        self.connection.commit()
+        self.connection.db_connection.commit()
 
     def insert_data(self, table_name):
         names = ['Bobby', 'Mc', 'McSmack', 'Board', 'Mc']
@@ -24,7 +24,7 @@ class QueryRunner:
             # while an int would be %s etc
             query = "INSERT INTO %s (name) VALUES ('%s')"
             self.cursor.execute(query % (table_name, name))
-        self.connection.commit()
+        self.connection.db_connection.commit()
 
     def query_1(self):
         # table_names = ["User", "Activity", "TrackPoint"]
