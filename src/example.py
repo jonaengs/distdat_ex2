@@ -56,6 +56,7 @@ def main():
         program.create_table(table_name="Person")
         program.insert_data(table_name="Person")
         _ = program.fetch_data(table_name="Person")
+        program.show_tables()
         program.drop_table(table_name="Person")
         # Check that the table is dropped
         program.show_tables()
