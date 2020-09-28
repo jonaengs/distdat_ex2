@@ -2,6 +2,7 @@ from DbConnector import DbConnector
 from tabulate import tabulate
 from tables_metadata import *
 from settings import save_queries, queries_file_path
+from datetime import datetime
 
 connection = DbConnector()
 cursor = None
@@ -68,7 +69,7 @@ def insert_user(user):
 def insert_activity(activity, uid):
     fields = _convert_field_names(activity_table_fields)
     values = f"'{uid:03}', "
-    values += ", ".join(f"'{getattr(activity, attr)}'" for attr in activity._fields[:-1])
+    values += _convert_values((activity.transportation_mode, activity.start_date_time, activity.end_date_time))
     _insert(activity_table_name, fields, values, both=True)
 
 def insert_trackpoints(trackpoints, aid):
@@ -79,6 +80,14 @@ def insert_trackpoints(trackpoints, aid):
 
 def _convert_field_names(fields):
     return ", ".join(field for field in fields)
+
+def _convert_values(values):
+    def convert_value(value):
+        if value is None:
+            return "NULL"
+        else:
+            return f"'{value}'"
+    return ", ".join(map(convert_value, values))
 
 def _convert_bool(b):
     return str(b).lower()
