@@ -29,7 +29,7 @@ trackpoint_table_settings = {
         "activity_id": "INT",
         "lat": "DOUBLE NOT NULL",
         "lon": "DOUBLE NOT NULL",
-        "altitude": "INT NOT NULL",
+        "altitude": "INT",
         "date_time": "DATETIME NOT NULL"
     },
     "foreign_key": ("activity_id", activity_table_name)

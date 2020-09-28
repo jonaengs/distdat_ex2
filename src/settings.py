@@ -6,7 +6,13 @@ local = False
 commit = True
 
 # bestemmer om alle tabeller skal slettes først når create_tables kjøres
-drop_tables = True  
+drop_tables = True
+
+# Altitude default value (-777) substiute
+altitude_default_value = "NULL"
+
+# Activity transportation mode default/missing value
+activity_tranportation_mode_default = "NULL"
 
 if local:
     DB_HOST="localhost"

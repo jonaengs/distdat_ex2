@@ -2,6 +2,8 @@ import os
 import sys
 from collections import namedtuple
 from datetime import datetime
+from settings import altitude_default_value as altitude_default
+from settings import activity_tranportation_mode_default as transport_default
 
 from utils import *
 
@@ -16,18 +18,23 @@ def create_string_trackpoint(line):
 
 def create_activity(line):
     start_date_time, end_date_time, activity = line.strip().split("\t")
-    activity = activity if activity else "N/A"
+    activity = activity if activity else transport_default
     return Activity(activity, parse_label_date_time(start_date_time), parse_label_date_time(end_date_time), [])
 
 def activity_from_trackpoints(first, last):
-    return Activity("N/A", first.datetime, last.datetime, [])
+    return Activity(transport_default, first.datetime, last.datetime, [])
 
 def trackpoint_from_line(line):
     return create_trackpoint(*extract_trackpoint_data(line))
 
 def extract_trackpoint_data(line):
     data = line.strip().split(",")
-    return data[:2]  + [data[3]] + [" ".join(data[-2:])]
+    lat, longt = data[:2]
+    alt = data[3]
+    datetime = " ".join(data[-2:])
+    alt = alt if alt != "-777" else altitude_default
+
+    return [lat, longt, alt, datetime]
 
 def get_users(max_count=None):
     users = [User(i, False, []) for i in range(num_users)]
@@ -65,9 +72,6 @@ def get_user_data(max_count=None):
                         activities[activity.start_date_time] = activity
                         trackpoints = activity.trackpoints
                     trackpoints += map(create_string_trackpoint, lines)
-
-        # MANGLER:
-        #   Hva skal vi gjøre med -777 altitude?
-        #   Hva skal vi gjøre med activities/labels uten tilsvarende trackpoints
+                    
         user.activities.extend([a for a in activities.values() if a.trackpoints])
         yield user
