@@ -12,7 +12,7 @@ def main():
         db_manager.show_create_table(table_name=table_name)
 
     print("-------- Inserting user data --------")
-    for user in get_user_data(5):
+    for user in get_user_data():
         db_manager.insert_user(user)
         for activity in user.activities:
             db_manager.insert_activity(activity, user.id)
