@@ -1,14 +1,14 @@
 from tables_metadata import user_table_name, activity_table_name, trackpoint_table_name
 
 # bestemmer om du kobler deg til server eller lokal database
-local = True
+local = False
 
 # bestemmer om endringer lagres. 
 # Hvis du tester og setter =True burde drop_tables også settes til True, ellers får du fort duplicate primary key errors
-commit = False
+commit = True
 
 # bestemmer om alle tabeller skal slettes først når create_tables kjøres
-drop_tables = False
+drop_tables = True
 
 # Altitude default value (-777) substiute
 altitude_default_value = "NULL"
@@ -22,7 +22,7 @@ since these are only a small portion of the total data anyways.
 So every query is stored, but only trackpoint insertions are not executed when saving query 
 """
 # Set to True to save all queries to a file instead of executing them
-save_queries = True  # atm, queries are only saved if they are not read from file
+save_queries = False  # atm, queries are only saved if they are not read from file
 read_queries_from_file = False
 queries_file_path = "../queries/all_queries"
 

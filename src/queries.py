@@ -67,7 +67,8 @@ class QueryRunner:
         transportation_mode = "taxi"
         query = """SELECT user_id
                     FROM Activity
-                    WHERE transportation_mode = "%s";""" % transportation_mode
+                    WHERE transportation_mode = "%s"
+                ;""" % transportation_mode
         self.cursor.execute(query)
         rows = self.cursor.fetchall()
 
@@ -75,13 +76,12 @@ class QueryRunner:
 
     def query_5(self):
         # Find the top 20 users with the highest number of activities
-        # HER ANTAR JEG AT DET IKKE FINNES NOEN MED NULL
 
         query = """SELECT transportation_mode, Count(transportation_mode) as Number_of_transportation_modes
                     FROM Activity
-                    WHERE transportation_mode != 'NULL'
+                    WHERE transportation_mode is not NULL
                     GROUP BY transportation_mode
-                    ORDER BY Count(transportation_mode) DESC
+                    ORDER BY Number_of_transportation_modes DESC
                 ;"""
         self.cursor.execute(query)
         rows = self.cursor.fetchall()
@@ -90,17 +90,23 @@ class QueryRunner:
 
     def query_6(self):
         # Find the top 20 users with the highest number of activities
-        
-        #SELECT EmployeeID, DATE_FORMAT(BirthDate, "%Y") FROM Employees;
+        # Discards activities that don't end in the same year that they started in
 
-        # query = """SELECT transportation_mode, Count(transportation_mode) as Number_of_transportation_modes
-        #             FROM Activity
-        #             GROUP BY transportation_mode
-        #             ORDER BY Count(transportation_mode) DESC;"""
-        query = """SELECT id, Count(id) as Number_of_ids
-                    FROM Person
-                    GROUP BY id
-                    ORDER BY Count(id) ASC;"""
+        query = """(SELECT YEAR(start_date_time) AS Year   
+                    FROM Activity
+                    WHERE YEAR(end_date_time) = YEAR(start_date_time)
+                    GROUP BY Year
+                    ORDER BY COUNT(*) DESC
+                    LIMIT 1)
+                    IN
+                    (SELECT YEAR(start_date_time) AS Year
+                    FROM Activity
+                    WHERE YEAR(end_date_time) = YEAR(start_date_time)
+                    GROUP BY Year
+                    ORDER BY ROUND(SUM(TIMEDIFF(end_date_time, start_date_time)) / 3600)
+                    LIMIT 1)
+                ;"""
+
         self.cursor.execute(query)
         rows = self.cursor.fetchall()
 
@@ -128,7 +134,8 @@ def main():
         # program.query_2()
         # program.query_3()
         # program.query_4()
-        program.query_5()
+        # program.query_5()
+        program.query_6()
 
 
 if __name__ == '__main__':
