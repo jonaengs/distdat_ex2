@@ -3,13 +3,6 @@ from tabulate import tabulate
 
 # with DbConnector as cursor
 class QueryRunner:
-
-    def __init__(self):
-        self.connection = DbConnector()
-        self.connection.__enter__()
-        self.db_connection = self.connection.db_connection
-        self.cursor = self.connection.cursor
-    
     def query_printer(self, query_number, rows, column_names):
         print("Query %s:\n" % query_number)
         print(tabulate(rows, headers=column_names))
@@ -22,7 +15,7 @@ class QueryRunner:
                 """
         # This adds table_name to the %s variable and executes the query
         self.cursor.execute(query % table_name)
-        self.db_connection.commit()
+        self.connection.commit()
 
     def insert_data(self, table_name):
         names = ['Bobby', 'Mc', 'McSmack', 'Board', 'Mc']
@@ -31,7 +24,7 @@ class QueryRunner:
             # while an int would be %s etc
             query = "INSERT INTO %s (name) VALUES ('%s')"
             self.cursor.execute(query % (table_name, name))
-        self.db_connection.commit()
+        self.connection.commit()
 
     def query_1(self):
         # table_names = ["User", "Activity", "TrackPoint"]
@@ -146,9 +139,11 @@ class QueryRunner:
 
 
 def main():
-    program = None
-    try:
+    connector = DbConnector()
+    with connector as cursor:
         program = QueryRunner()
+        program.connection = connector
+        program.cursor = cursor
         program.create_table(table_name="Person")
         program.insert_data(table_name="Person")
         program.query_1()
@@ -160,12 +155,7 @@ def main():
         program.drop_table(table_name="Person")
         # Check that the table is dropped
         program.show_tables()
-    except Exception as e:
-        print("ERROR: Failed to use database:", e)
-    finally:
-        if program:
-            program.cursor.close()
-            program.db_connection.close()
+
 
 if __name__ == '__main__':
     main()

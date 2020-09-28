@@ -7,7 +7,7 @@ class DbConnector:
     def __enter__(self, HOST=DB_HOST, DATABASE=DB_DATABASE, USER=DB_USER, PASSWORD=DB_PASSWORD):
         # Connect to the database
         self.db_connection = mysql.connect(host=HOST, database=DATABASE, user=USER, password=PASSWORD, port=3306)
-
+                
         # Get the db cursor
         self.cursor = self.db_connection.cursor()
         print("Connected to:", self.db_connection.get_server_info())
