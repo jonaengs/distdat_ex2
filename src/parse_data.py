@@ -28,7 +28,7 @@ def extract_trackpoint_data(line):
 
 def get_users(max_count=None):
     users = [User(i, False, []) for i in range(num_users)]
-    with open("dataset/labeled_ids.txt", mode="r") as labels_file:
+    with open("../dataset/labeled_ids.txt", mode="r") as labels_file:
         for uid in map(int, labels_file.readlines()):
             users[uid] = User(uid, True, [])
     return users[:max_count if max_count else length(users)]

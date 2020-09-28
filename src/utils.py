@@ -9,7 +9,7 @@ max_file_size_limit = max_line_size * max_lines_limit
 is_below_max_size = lambda fp: os.stat(fp).st_size < max_file_size_limit
 
 num_users = 182
-data_path = "dataset/Data"
+data_path = "../dataset/Data"
 get_trackpoints_path = lambda uid: f"{data_path}/{uid:03}/Trajectory/"
 get_labels_path = lambda uid: f"{data_path}/{uid:03}/labels.txt"
 
