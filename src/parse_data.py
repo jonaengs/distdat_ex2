@@ -8,7 +8,7 @@ from settings import activity_tranportation_mode_default as transport_default
 from utils import *
 
 def create_trackpoint(lat, longt, alt, date_time):
-    return Trackpoint(float(lat), float(longt), int(float(alt)), parse_tp_date_time(date_time))
+    return Trackpoint(float(lat), float(longt), alt, parse_tp_date_time(date_time))
 
 def create_string_trackpoint(line):
     trackpoint_data = extract_trackpoint_data(line)

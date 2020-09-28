@@ -1,6 +1,7 @@
 from DbConnector import DbConnector
 from tabulate import tabulate
 from tables_metadata import *
+from settings import save_queries, queries_file_path
 
 connection = DbConnector()
 cursor = None
@@ -77,16 +78,32 @@ def insert_trackpoints(trackpoints, aid):
     tp_data = ", ".join(map(tp_to_string, trackpoints))
     _batch_insert(trackpoint_table_name, fields, tp_data)
 
-def _batch_insert(table, fields, values):
-    query = f"INSERT INTO {table} ({fields}) VALUES {values}"
-    cursor.execute(query)
-
-def _insert(table, fields, values):
-    query = f"INSERT INTO {table} ({fields}) VALUES ({values})"
-    cursor.execute(query)
-
 def _convert_field_names(fields):
     return ", ".join(field for field in fields)
 
 def _convert_bool(b):
     return str(b).lower()
+
+def _batch_insert(table, fields, values):
+    query = f"INSERT INTO {table} ({fields}) VALUES {values}"
+    _exec_query(query)
+
+def _insert(table, fields, values):
+    query = f"INSERT INTO {table} ({fields}) VALUES ({values})"
+    _exec_query(query)
+
+def _exec_query(query):
+    if save_queries:
+        save_query(query)
+    else:
+        cursor.execute(query)
+
+def save_query(query):
+    with open(queries_file_path, mode="a") as f:
+        f.write(query + "\n")
+
+def exec_queries_from_file():
+    with open(queries_file_path, mode="r") as f:
+        for query in f.readlines():
+            cursor.execute(query)
+            print("")
