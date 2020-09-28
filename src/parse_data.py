@@ -9,7 +9,10 @@ def create_trackpoint(lat, longt, alt, date_time):
     return Trackpoint(float(lat), float(longt), int(float(alt)), parse_tp_date_time(date_time))
 
 def create_string_trackpoint(line):
-    return Trackpoint(*extract_trackpoint_data(line))
+    trackpoint_data = extract_trackpoint_data(line)
+    # surround datetiem with single-quotes for easy mysql-insertion
+    trackpoint_data[-1] = "'" + trackpoint_data[-1] + "'"
+    return Trackpoint(*trackpoint_data)
 
 def create_activity(line):
     start_date_time, end_date_time, activity = line.strip().split("\t")
@@ -62,5 +65,9 @@ def get_user_data(max_count=None):
                         activities[activity.start_date_time] = activity
                         trackpoints = activity.trackpoints
                     trackpoints += map(create_string_trackpoint, lines)
+
+        # MANGLER:
+        #   Hva skal vi gjøre med -777 altitude?
+        #   Hva skal vi gjøre med activities/labels uten tilsvarende trackpoints
         user.activities.extend([a for a in activities.values() if a.trackpoints])
         yield user

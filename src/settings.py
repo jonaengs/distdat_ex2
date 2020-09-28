@@ -1,9 +1,9 @@
 # bestemmer om du kobler deg til server eller lokal database
-local = False  
+local = False
 
 # bestemmer om endringer lagres. 
 # Hvis du tester og setter =True burde drop_tables også settes til True, ellers får du fort duplicate primary key errors
-commit = True  
+commit = True
 
 # bestemmer om alle tabeller skal slettes først når create_tables kjøres
 drop_tables = True  

@@ -72,7 +72,14 @@ def insert_activity(activity, uid):
 
 def insert_trackpoints(trackpoints, aid):
     # batch/bulk insert: https://stackoverflow.com/questions/5526917/how-to-do-a-batch-insert-in-mysql
-    pass
+    tp_to_string = lambda tp: f"({aid}, {_convert_field_names(tp)})"
+    fields = _convert_field_names(trackpoint_table_fields)
+    tp_data = ", ".join(map(tp_to_string, trackpoints))
+    _batch_insert(trackpoint_table_name, fields, tp_data)
+
+def _batch_insert(table, fields, values):
+    query = f"INSERT INTO {table} ({fields}) VALUES {values}"
+    cursor.execute(query)
 
 def _insert(table, fields, values):
     query = f"INSERT INTO {table} ({fields}) VALUES ({values})"

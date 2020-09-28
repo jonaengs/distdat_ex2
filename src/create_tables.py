@@ -12,11 +12,11 @@ def main():
         db_manager.show_create_table(table_name=table_name)
 
     print("-------- Inserting user data --------")
-    for user in get_user_data(10):
+    for user in get_user_data(5):
         db_manager.insert_user(user)
         for activity in user.activities:
             db_manager.insert_activity(activity, user.id)
-            activity_id = cursor.lastrowid
+            activity_id = cursor.lastrowid  # get id of last inserted activity, trackpoints will point to this one
             db_manager.insert_trackpoints(activity.trackpoints, activity_id)
         print(f"Insert user {user.id} data ok")
 
