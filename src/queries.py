@@ -1,11 +1,12 @@
 from DbConnector import DbConnector
 from tabulate import tabulate
 
-
-class ExampleProgram:
+# with DbConnector as cursor
+class QueryRunner:
 
     def __init__(self):
         self.connection = DbConnector()
+        self.connection.__enter__()
         self.db_connection = self.connection.db_connection
         self.cursor = self.connection.cursor
     
@@ -147,7 +148,7 @@ class ExampleProgram:
 def main():
     program = None
     try:
-        program = ExampleProgram()
+        program = QueryRunner()
         program.create_table(table_name="Person")
         program.insert_data(table_name="Person")
         program.query_1()
@@ -163,8 +164,8 @@ def main():
         print("ERROR: Failed to use database:", e)
     finally:
         if program:
-            program.connection.close_connection()
-
+            program.cursor.close()
+            program.db_connection.close()
 
 if __name__ == '__main__':
     main()
