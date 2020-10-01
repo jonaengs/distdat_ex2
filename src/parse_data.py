@@ -1,6 +1,6 @@
 import os
 import sys
-from collections import namedtuple
+from collections import namedtuple, defaultdict
 from datetime import datetime
 from settings import altitude_default_value as altitude_default
 from settings import activity_tranportation_mode_default as transport_default
@@ -37,11 +37,12 @@ def extract_trackpoint_data(line):
     return [lat, longt, alt, datetime]
 
 def get_users(max_count=None):
-    users = [User(i, False, []) for i in range(num_users)]
+    has_labels = defaultdict(bool)
     with open("../dataset/labeled_ids.txt", mode="r") as labels_file:
         for uid in map(int, labels_file.readlines()):
-            users[uid] = User(uid, True, [])
-    return users[:max_count if max_count is not None else len(users)]
+            has_labels[uid] = True
+    for i in range(max_count if max_count is not None else num_users):
+        yield User(i, has_labels[i], [])
 
 def get_user_data(max_count=None):
     for user in get_users(max_count):
