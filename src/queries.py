@@ -126,7 +126,7 @@ class QueryRunner:
                         Activity.user_id,
                         SUM(ST_Distance_Sphere(
                             ST_GeomFromText(ST_AsText(Point(From_points.lon, From_points.lat))),
-                            ST_GeomFromText(ST_AsText(Point(To_points.lon, To_points.lat))))) AS Total_distance
+                            ST_GeomFromText(ST_AsText(Point(To_points.lon, To_points.lat)))) / 1000 AS Total_distance_km
                     FROM TrackPoint AS From_points
                         INNER JOIN TrackPoint AS To_points
                         ON From_points.id = To_points.id - 1
