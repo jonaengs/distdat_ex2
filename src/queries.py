@@ -28,11 +28,14 @@ class QueryRunner:
 
     def query_2(self):
         # Find the average number of activities per user.
-        query = """SELECT AVG(Number_of_activities) AS Average_activities_per_user FROM (
+        query = """ SELECT AVG(Number_of_activities) AS Average_activities_per_user 
+                    FROM (
                         SELECT user_id, Count(user_id) as Number_of_activities
                         FROM Activity
                         GROUP BY user_id
-                    ) AS Number_of_activities;"""
+                    ) 
+                    AS Number_of_activities
+                ;"""
         self.cursor.execute(query)
         rows = self.cursor.fetchall()
 
@@ -221,18 +224,18 @@ class QueryRunner:
                 ;"""
         # THE REAL QUERY:
         query = """
-                    SELECT user_id, T.transport_count AS most_used_transportation_mode
+                    SELECT user_id, transport_count AS most_used_transportation_mode
                     FROM (
-                        SELECT user_id, transportation_mode, COUNT(transportation_mode) AS tranport_count
+                        SELECT user_id, transportation_mode, COUNT(transportation_mode) AS transport_count
                         FROM Activity
                         WHERE transportation_mode IS NOT NULL
                         GROUP BY user_id, transportation_mode
                         ORDER BY user_id ASC, COUNT(transportation_mode) DESC
-                    )
+                    ) AS TransportActivities
                     GROUP BY user_id
                 ;"""
         
-        self.cursor.execute(test_query)
+        self.cursor.execute(query)
         rows = self.cursor.fetchall()
 
         self.query_printer(query_number=11, rows=rows, column_names=self.cursor.column_names)
@@ -255,7 +258,7 @@ def main():
         # program.query_8()
         # program.query_9()
         # program.query_10()
-        # program.query_11()
+        program.query_11()
 
 
 if __name__ == '__main__':
