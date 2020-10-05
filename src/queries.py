@@ -131,9 +131,12 @@ class QueryRunner:
                     SELECT DISTINCT user_id
                     FROM Activity as A
                     INNER JOIN (
-                        SELECT activity_id, lat, lon
+                        SELECT activity_id
                         FROM TrackPoint
-                        WHERE lat BETWEEN 39.91 AND 39.92 AND lon BETWEEN 116.39 AND 116.40
+                        WHERE 
+                            lat BETWEEN 39.916 AND 39.918 
+                            AND 
+                            lon BETWEEN 116.396 AND 116.398
                     )
                     as TP on A.id=TP.activity_id
                 ;"""
@@ -143,22 +146,11 @@ class QueryRunner:
         self.query_printer(query_number=10, rows=rows, column_names=self.cursor.column_names)
 
 
-    def drop_table(self, table_name):
-        # print("Dropping table %s..." % table_name)
-        query = "DROP TABLE %s"
-        self.cursor.execute(query % table_name)
-
-    def show_tables(self):
-        self.cursor.execute("SHOW TABLES")
-        rows = self.cursor.fetchall()
-        # print(tabulate(rows, headers=self.cursor.column_names))
-
-
 def main():
+    program = QueryRunner()
     connector = DbConnector()
+    program.connection = connector
     with connector as cursor:
-        program = QueryRunner()
-        program.connection = connector
         program.cursor = cursor
 
         # program.query_1()
