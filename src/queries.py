@@ -86,7 +86,6 @@ class QueryRunner:
 
     def query_6(self):
         # a) Find the year with the most activities.
-
         query_a = """SELECT YEAR(start_date_time) AS Year   
                     FROM Activity
                     WHERE YEAR(end_date_time) = YEAR(start_date_time)
@@ -101,15 +100,13 @@ class QueryRunner:
         self.query_printer(query_number="6a", rows=rows_a,
                            column_names=self.cursor.column_names)
 
-        # b) Is this also the year with most recorded hours?
-
+        # b) Find year with most recorded hours
         query_b = """
                     SELECT YEAR(start_date_time) AS Year
                     FROM Activity
                     WHERE YEAR(end_date_time) = YEAR(start_date_time)
                     GROUP BY Year
-                    ORDER BY ROUND(SUM(TIMEDIFF(end_date_time, start_date_time)) / 3600)
-                    LIMIT 1;
+                    ORDER BY ROUND(SUM(TIMEDIFF(end_date_time, start_date_time)) / 3600) DESC
                 """
         self.cursor.execute(query_b)
         rows_b = self.cursor.fetchall()
@@ -117,10 +114,9 @@ class QueryRunner:
         self.query_printer(query_number="6b", rows=rows_b,
                            column_names=self.cursor.column_names)
 
-        # (2008 != 2000)
-        is_OR_is_not = "IS" if rows_a[0][0] == rows_b[0][0] else "is NOT"
+        is_or_is_not = "IS" if rows_a[0][0] == rows_b[0][0] else "is NOT"
         print("6b) The year with most activities",
-              is_OR_is_not, "the year with most recorded hours")
+              is_or_is_not, "the year with most recorded hours")
 
     def query_7(self):
         # a) Find the year with the most activities.
@@ -247,12 +243,12 @@ def main():
         # program.query_3()
         # program.query_4()
         # program.query_5()
-        # program.query_6()
+        program.query_6()
         # program.query_7()
         # program.query_8()
         # program.query_9()
         # program.query_10()
-        program.query_11()
+        # program.query_11()
 
 
 if __name__ == '__main__':
