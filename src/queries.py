@@ -89,28 +89,39 @@ class QueryRunner:
         self.query_printer(query_number=5, rows=rows, column_names=self.cursor.column_names)
 
     def query_6(self):
-        # Find the top 20 users with the highest number of activities
-        # Discards activities that don't end in the same year that they started in
+        # a) Find the year with the most activities.
 
-        query = """(SELECT YEAR(start_date_time) AS Year   
+        query = """SELECT YEAR(start_date_time) AS Year   
                     FROM Activity
                     WHERE YEAR(end_date_time) = YEAR(start_date_time)
                     GROUP BY Year
                     ORDER BY COUNT(*) DESC
-                    LIMIT 1)
-                    IN
-                    (SELECT YEAR(start_date_time) AS Year
+                    LIMIT 1
+                ;"""
+
+        self.cursor.execute(query)
+        rows_a = self.cursor.fetchall()
+
+        self.query_printer(query_number="6a", rows=rows_a, column_names=self.cursor.column_names)
+
+        # b) Is this also the year with most recorded hours?
+
+        query2 = """
+                    SELECT YEAR(start_date_time) AS Year
                     FROM Activity
                     WHERE YEAR(end_date_time) = YEAR(start_date_time)
                     GROUP BY Year
                     ORDER BY ROUND(SUM(TIMEDIFF(end_date_time, start_date_time)) / 3600)
-                    LIMIT 1)
-                ;"""
+                    LIMIT 1;
+                """
+        self.cursor.execute(query2)
+        rows_b = self.cursor.fetchall()
 
-        self.cursor.execute(query)
-        rows = self.cursor.fetchall()
+        self.query_printer(query_number="6b", rows=rows_b, column_names=self.cursor.column_names)
 
-        self.query_printer(query_number=6, rows=rows, column_names=self.cursor.column_names)
+        # (2008 != 2000)
+        is_OR_is_not = "IS" if rows_a[0][0] == rows_b[0][0] else "is NOT"
+        print("6b) The year with most activities", is_OR_is_not, "the year with most recorded hours")
 
     def drop_table(self, table_name):
         # print("Dropping table %s..." % table_name)
