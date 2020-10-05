@@ -1,8 +1,6 @@
 from DbConnector import DbConnector
 from tabulate import tabulate
 from tables_metadata import *
-from settings import save_queries, queries_file_path
-from datetime import datetime
 
 connection = DbConnector()
 cursor = None
@@ -64,13 +62,13 @@ def show_create_table(table_name):
 def insert_user(user):
     fields = _convert_field_names(user_table_fields)
     values = ", ".join((f"'{user.id:03}'", _convert_bool(user.has_labels)))
-    _insert(user_table_name, fields, values, both=True)
+    _insert(user_table_name, fields, values)
 
 def insert_activity(activity, uid):
     fields = _convert_field_names(activity_table_fields)
     values = f"'{uid:03}', "
     values += _convert_values((activity.transportation_mode, activity.start_date_time, activity.end_date_time))
-    _insert(activity_table_name, fields, values, both=True)
+    _insert(activity_table_name, fields, values)
 
 def insert_trackpoints(trackpoints, aid):
     tp_to_string = lambda tp: f"({aid}, {_convert_field_names(tp)})"
@@ -92,27 +90,10 @@ def _convert_values(values):
 def _convert_bool(b):
     return str(b).lower()
 
-def _batch_insert(table, fields, values, **kwargs):
+def _batch_insert(table, fields, values):
     query = f"INSERT INTO {table} ({fields}) VALUES {values}"
-    _exec_query(query, **kwargs)
+    cursor.execute(query)
 
-def _insert(table, fields, values, **kwargs):
+def _insert(table, fields, values):
     query = f"INSERT INTO {table} ({fields}) VALUES ({values})"
-    _exec_query(query, **kwargs)
-
-def _exec_query(query, both=False):
-    if save_queries:
-        save_query(query)
-        if both:
-            cursor.execute(query)
-    else:
-        cursor.execute(query)
-
-def save_query(query):
-    with open(queries_file_path, mode="a") as f:
-        f.write(query + "\n")
-
-def exec_saved_queries():
-    with open(queries_file_path, mode="r") as f:
-        for query in f.readlines():
-            cursor.execute(query)
+    cursor.execute(query)
