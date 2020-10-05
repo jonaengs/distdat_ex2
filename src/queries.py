@@ -1,36 +1,19 @@
 from DbConnector import DbConnector
 from tabulate import tabulate
+from tables_metadata import all_table_names
 
 # with DbConnector as cursor
 class QueryRunner:
-    def query_printer(self, query_number, rows, column_names):
+    @staticmethod
+    def query_printer(query_number, rows, column_names):
         print("Query %s:\n" % query_number)
         print(tabulate(rows, headers=column_names))
         print("\n")
 
-    def create_table(self, table_name):
-        query = """CREATE TABLE IF NOT EXISTS %s (
-                   id INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
-                   name VARCHAR(30))
-                """
-        # This adds table_name to the %s variable and executes the query
-        self.cursor.execute(query % table_name)
-        self.connection.db_connection.commit()
-
-    def insert_data(self, table_name):
-        names = ['Bobby', 'Mc', 'McSmack', 'Board', 'Mc']
-        for name in names:
-            # Take note that the name is wrapped in '' --> '%s' because it is a string,
-            # while an int would be %s etc
-            query = "INSERT INTO %s (name) VALUES ('%s')"
-            self.cursor.execute(query % (table_name, name))
-        self.connection.db_connection.commit()
-
     def query_1(self):
-        table_names = ["User", "Activity", "TrackPoint"]
         table_name_mapping = {"User": "users", "Activity": "activities", "TrackPoint": "trackpoints"}
         
-        for table_name in table_names:
+        for table_name in all_table_names:
             query = "SELECT COUNT(*) AS Number_of_%s FROM %s" # Kanskje bytt ut * med ID elns
             self.cursor.execute(query % (table_name_mapping[table_name], table_name))
             rows = self.cursor.fetchall()
