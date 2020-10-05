@@ -91,7 +91,7 @@ class QueryRunner:
     def query_6(self):
         # a) Find the year with the most activities.
 
-        query = """SELECT YEAR(start_date_time) AS Year   
+        query_a = """SELECT YEAR(start_date_time) AS Year   
                     FROM Activity
                     WHERE YEAR(end_date_time) = YEAR(start_date_time)
                     GROUP BY Year
@@ -99,14 +99,14 @@ class QueryRunner:
                     LIMIT 1
                 ;"""
 
-        self.cursor.execute(query)
+        self.cursor.execute(query_a)
         rows_a = self.cursor.fetchall()
 
         self.query_printer(query_number="6a", rows=rows_a, column_names=self.cursor.column_names)
 
         # b) Is this also the year with most recorded hours?
 
-        query2 = """
+        query_b = """
                     SELECT YEAR(start_date_time) AS Year
                     FROM Activity
                     WHERE YEAR(end_date_time) = YEAR(start_date_time)
@@ -114,7 +114,7 @@ class QueryRunner:
                     ORDER BY ROUND(SUM(TIMEDIFF(end_date_time, start_date_time)) / 3600)
                     LIMIT 1;
                 """
-        self.cursor.execute(query2)
+        self.cursor.execute(query_b)
         rows_b = self.cursor.fetchall()
 
         self.query_printer(query_number="6b", rows=rows_b, column_names=self.cursor.column_names)
@@ -146,7 +146,7 @@ def main():
         # program.query_3()
         # program.query_4()
         # program.query_5()
-        program.query_6()
+        # program.query_6()
 
 
 if __name__ == '__main__':
