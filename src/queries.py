@@ -141,6 +141,30 @@ class QueryRunner:
         self.query_printer(query_number="7", rows=rows,
                            column_names=self.cursor.column_names)
 
+    def query_8(self):
+        query = """
+                    SELECT 
+                        Activity.user_id, 
+                        SUM(To_points.altitude - From_points.altitude) / 3.2808 
+                            AS Altitude_gained
+                    FROM TrackPoint AS From_points
+                        INNER JOIN TrackPoint AS To_points
+                        ON From_points.id = To_points.id - 1
+                            AND From_points.activity_id = To_points.activity_id
+                            AND To_points.altitude > From_points.altitude
+                        INNER JOIN Activity
+                        ON From_points.activity_id = Activity.id
+                    GROUP BY Activity.user_id
+                    ORDER BY Altitude_gained DESC
+                    LIMIT 20
+                ;"""
+
+        self.cursor.execute(query)
+        rows = self.cursor.fetchall()
+
+        self.query_printer(query_number="8", rows=rows,
+                           column_names=self.cursor.column_names)
+
     def query_9(self):
         query = """
                     SELECT Activity.user_id, Count(Activity.id) as Num_invalid
@@ -200,6 +224,7 @@ def main():
         # program.query_6()
         # program.query_7()
         # program.query_9()
+        program.query_8()
         # program.query_10()
 
 
