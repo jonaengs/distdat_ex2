@@ -213,26 +213,20 @@ class QueryRunner:
 
     def query_11(self):
         # Find all users who have registered transportation_mode and their most used transportation_mode
-
-        # TEST QUERY
-        test_query = """
-                    SELECT user_id, transportation_mode, COUNT(transportation_mode) AS tranport_count
-                    FROM Activity
-                    WHERE transportation_mode IS NOT NULL
-                    GROUP BY user_id, transportation_mode
-                    ORDER BY user_id ASC, COUNT(transportation_mode) DESC
-                ;"""
-        # THE REAL QUERY:
         query = """
-                    SELECT user_id, transport_count AS most_used_transportation_mode
-                    FROM (
-                        SELECT user_id, transportation_mode, COUNT(transportation_mode) AS transport_count
-                        FROM Activity
-                        WHERE transportation_mode IS NOT NULL
-                        GROUP BY user_id, transportation_mode
-                        ORDER BY user_id ASC, COUNT(transportation_mode) DESC
-                    ) AS TransportActivities
-                    GROUP BY user_id
+                    SELECT DISTINCT a.user_id, a.transportation_mode
+                    FROM Activity a
+                    WHERE a.transportation_mode = 
+                    ( /* Selects most popular transportation mode for a given user */
+                        SELECT a2.transportation_mode 
+                        FROM Activity a2
+                        WHERE a2.user_id = a.user_id
+                        GROUP BY a2.transportation_mode
+                        ORDER BY 
+                            COUNT(a2.transportation_mode) DESC, 
+                            a2.transportation_mode ASC
+                        LIMIT 1
+                    )
                 ;"""
         
         self.cursor.execute(query)
