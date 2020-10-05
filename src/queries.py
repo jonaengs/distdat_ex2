@@ -132,7 +132,7 @@ class QueryRunner:
                         ON From_points.id = To_points.id - 1
                         INNER JOIN Activity
                         ON From_points.activity_id = Activity.id
-                    WHERE Activity.user_id = 112;
+                    WHERE Activity.user_id = 112 AND Activity.transportation_mode = "walk";
                 ;"""
 
         self.cursor.execute(query)
