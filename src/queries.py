@@ -122,6 +122,26 @@ class QueryRunner:
         # (2008 != 2000)
         is_OR_is_not = "IS" if rows_a[0][0] == rows_b[0][0] else "is NOT"
         print("6b) The year with most activities", is_OR_is_not, "the year with most recorded hours")
+    
+    def query_10(self):
+        # Find the users who have tracked an activity in the Forbidden City of Beijing (lat 39.916, lon 116.397)
+        # Exaclty lat=39.916 and lon=116.397 gives no answer, so we rounded the values to two decimals and made a range
+        
+        query = """
+                    SELECT DISTINCT user_id
+                    FROM Activity as A
+                    INNER JOIN (
+                        SELECT activity_id, lat, lon
+                        FROM TrackPoint
+                        WHERE lat BETWEEN 39.91 AND 39.92 AND lon BETWEEN 116.39 AND 116.40
+                    )
+                    as TP on A.id=TP.activity_id
+                ;"""
+        self.cursor.execute(query)
+        rows = self.cursor.fetchall()
+
+        self.query_printer(query_number=10, rows=rows, column_names=self.cursor.column_names)
+
 
     def drop_table(self, table_name):
         # print("Dropping table %s..." % table_name)
@@ -147,6 +167,7 @@ def main():
         # program.query_4()
         # program.query_5()
         # program.query_6()
+        # program.query_10()
 
 
 if __name__ == '__main__':
