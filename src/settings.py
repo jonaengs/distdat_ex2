@@ -16,16 +16,6 @@ altitude_default_value = "NULL"
 # Activity transportation mode default/missing value
 activity_tranportation_mode_default = None
 
-""" NOTE: 
-To get activity IDs to work correctly, we actually still execute the activity and user insertions, 
-since these are only a small portion of the total data anyways. 
-So every query is stored, but only trackpoint insertions are not executed when saving query 
-"""
-# Set to True to save all queries to a file instead of executing them
-save_queries = False  # atm, queries are only saved if they are not read from file
-read_queries_from_file = False
-queries_file_path = "../queries/all_queries"
-
 if local:
     DB_HOST="localhost"
     DB_DATABASE="db"
