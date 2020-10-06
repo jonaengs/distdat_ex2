@@ -115,8 +115,6 @@ def query_6(cursor):
             is_or_is_not, "the year with most recorded hours")
 
 def query_7(cursor):
-    # a) Find the year with the most activities.
-
     query = """SELECT
                     Activity.user_id,
                     SUM(ST_Distance_Sphere(

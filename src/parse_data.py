@@ -19,13 +19,15 @@ def create_string_trackpoint(line):
 def create_activity(line):
     start_date_time, end_date_time, activity = line.strip().split("\t")
     activity = activity if activity else transport_default
-    return Activity(activity, parse_label_date_time(start_date_time), parse_label_date_time(end_date_time), [])
+    start_date_time, end_date_time = map(str, map(parse_label_date_time, (start_date_time, end_date_time)))
+    return Activity(activity, start_date_time, end_date_time, [])
 
 def activity_from_trackpoints(first, last):
-    return Activity(transport_default, first.datetime, last.datetime, [])
+    return Activity(transport_default, get_tp_datetime_str(first), get_tp_datetime_str(last), [])
 
-def trackpoint_from_line(line):
-    return create_trackpoint(*extract_trackpoint_data(line))
+def get_tp_datetime_str(line):
+    data = line.strip().split(",")
+    return " ".join(data[-2:])
 
 def extract_trackpoint_data(line):
     data = line.strip().split(",")
@@ -36,16 +38,17 @@ def extract_trackpoint_data(line):
 
     return [lat, longt, alt, datetime]
 
-def get_users(max_count=None):
+def get_has_labels(max_count=None):
     has_labels = defaultdict(bool)
     with open("../dataset/labeled_ids.txt", mode="r") as labels_file:
         for uid in map(int, labels_file.readlines()):
             has_labels[uid] = True
-    for i in range(max_count if max_count is not None else num_users):
-        yield User(i, has_labels[i], [])
+    return has_labels
 
 def get_user_data(max_count=None):
-    for user in get_users(max_count):
+    has_labels = get_has_labels(max_count)
+    for i in range(num_users):
+        user = User(i, has_labels[i], [])
         trackpoints_path = get_trackpoints_path(user.id)
         trackpoint_files = os.listdir(trackpoints_path)
         if user.has_labels:
@@ -55,24 +58,21 @@ def get_user_data(max_count=None):
                     (activity.start_date_time): activity 
                     for activity in map(create_activity, labels_file.readlines()[1:])
                 }
-        else:
+        else:   
             activities = {}
         for file_path in filter(is_below_max_size, (trackpoints_path + fn for fn in trackpoint_files)):
             with open(file_path, mode="r") as f:
                 lines = f.readlines()[data_offset:]
                 if len(lines) <= 2500:
-                    trackpoints = None
+                    activity_trackpoints = None
                     if user.has_labels:
-                        filename = os.path.basename(f.name).split(".")[0]
-                        activity = activities.get(parse_fn_date_time(filename))
+                        activity = activities.get(get_tp_datetime_str(lines[0]))
                         if activity:
-                            trackpoints = activity.trackpoints
-                    if trackpoints is None:
-                        first_trackpoint, last_trackpoint = map(trackpoint_from_line, [lines[0], lines[-1]])
-                        activity = activity_from_trackpoints(first_trackpoint, last_trackpoint)
+                            activity_trackpoints = activity.trackpoints
+                    if activity_trackpoints is None:
+                        activity = activity_from_trackpoints(lines[0], lines[-1])
                         activities[activity.start_date_time] = activity
-                        trackpoints = activity.trackpoints
-                    trackpoints += map(create_string_trackpoint, lines)
+                    activity.trackpoints.extend(map(create_string_trackpoint, lines))
 
         user.activities.extend([a for a in activities.values() if a.trackpoints])
         yield user
