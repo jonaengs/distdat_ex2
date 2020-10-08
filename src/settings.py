@@ -1,5 +1,3 @@
-from tables_metadata import user_table_name, activity_table_name, trackpoint_table_name
-
 # bestemmer om du kobler deg til server eller lokal database
 local = False
 

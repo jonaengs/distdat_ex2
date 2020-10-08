@@ -1,3 +1,26 @@
+# Exercise 2, TDT4225 Store, distribuerte datamenger
+
+## Running the code
+Make sure you have a python3.6 or later installed.
+
+Open a terminal of your choice.
+
+Navigate into the source folder:
+```
+$ cd src
+```
+
+To create tables and insert data, run:
+```
+$ python setup_tables.py
+```
+
+To execute the queries, run:
+```
+$ python queries.py
+```
+
+
 # DistDat - Øving 2
 Exercise 2, TDT4225 Store, distribuerte datamenger
 

@@ -1,4 +1,5 @@
 import os
+from tabulate import tabulate
 from collections import namedtuple
 from datetime import datetime
 
@@ -15,17 +16,9 @@ get_labels_path = lambda uid: f"{data_path}/{uid:03}/labels.txt"
 
 tp_datetime_format = r"%Y-%m-%d %H:%M:%S"
 label_datetime_format = r"%Y/%m/%d %H:%M:%S"
-fn_datetime_format = r"%Y%m%d%H%M%S"
 parse_tp_date_time = lambda s_datetime: datetime.strptime(s_datetime, tp_datetime_format)
 parse_label_date_time = lambda s_datetime: datetime.strptime(s_datetime, label_datetime_format)
-parse_fn_date_time = lambda fn: datetime.strptime(fn, fn_datetime_format)
 
 User = namedtuple("User", ("id", "has_labels", "activities"))
 Trackpoint = namedtuple("Trackpoint", ("latitude", "longtitude", "altitude", "datetime"))
 Activity = namedtuple("Activity", ("transportation_mode", "start_date_time", "end_date_time", "trackpoints"))
-
-def clear_file(filename):
-    print(f"Clearing file: {filename}")
-    f = open(filename, 'w')
-    f.truncate(0)
-    f.close()
