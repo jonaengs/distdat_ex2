@@ -1,25 +1,26 @@
-from DbConnector import DbConnector
+import sys
+from inspect import getmembers
 from tabulate import tabulate
-from tables_metadata import all_table_names
+from pprint import pprint
+from operator import itemgetter
 
-def query_printer(query_number, rows, column_names):
+
+from tables_metadata import all_table_names
+from DbConnector import DbConnector
+
+def print_query_result(query_number, rows, column_names):
     print("Query %s:\n" % query_number)
-    print(tabulate(rows, headers=column_names))
-    print("\n")
+    print(tabulate(rows, headers=column_names), end="\n\n")
 
 def query_1(cursor):
-    table_name_mapping = {
-        "User": "users", "Activity": "activities", "TrackPoint": "trackpoints"}
-
-    for table_name in all_table_names:
-        # Kanskje bytt ut * med ID elns
-        query = "SELECT COUNT(*) AS Number_of_%s FROM %s"
-        cursor.execute(
-            query % (table_name_mapping[table_name], table_name))
-        rows = cursor.fetchall()
-
-        query_printer(query_number=1, rows=rows,
-                            column_names=cursor.column_names)
+    plurals = {"User": "users", "Activity": "activities", "TrackPoint": "trackpoints"}
+    sub_q_string = "(SELECT COUNT(*) FROM %s) AS Number_of_%s"
+    sub_queries = (sub_q_string % (tn, plurals[tn]) for tn in all_table_names)
+    query =  "SELECT " + ", ".join(sub_queries)
+    cursor.execute(query)
+    rows = cursor.fetchall()
+    print_query_result(query_number=1, rows=rows,
+                        column_names=cursor.column_names)
 
 def query_2(cursor):
     # Find the average number of activities per user.
@@ -34,7 +35,7 @@ def query_2(cursor):
     cursor.execute(query)
     rows = cursor.fetchall()
 
-    query_printer(query_number=2, rows=rows,
+    print_query_result(query_number=2, rows=rows,
                         column_names=cursor.column_names)
 
 def query_3(cursor):
@@ -47,7 +48,7 @@ def query_3(cursor):
     cursor.execute(query)
     rows = cursor.fetchall()
 
-    query_printer(query_number=3, rows=rows,
+    print_query_result(query_number=3, rows=rows,
                         column_names=cursor.column_names)
 
 def query_4(cursor):
@@ -61,7 +62,7 @@ def query_4(cursor):
     cursor.execute(query)
     rows = cursor.fetchall()
 
-    query_printer(query_number=4, rows=rows,
+    print_query_result(query_number=4, rows=rows,
                         column_names=cursor.column_names)
 
 def query_5(cursor):
@@ -76,43 +77,39 @@ def query_5(cursor):
     cursor.execute(query)
     rows = cursor.fetchall()
 
-    query_printer(query_number=5, rows=rows,
+    print_query_result(query_number=5, rows=rows,
                         column_names=cursor.column_names)
 
 def query_6(cursor):
-    # a) Find the year with the most activities.
-    query_a = """SELECT YEAR(start_date_time) AS Year   
+    # Find the year with the most activities and the year with most recorded activity hours.
+       
+    query_a = """
+                (SELECT YEAR(start_date_time) AS Year
                 FROM Activity
                 WHERE YEAR(end_date_time) = YEAR(start_date_time)
                 GROUP BY Year
                 ORDER BY COUNT(*) DESC
-                LIMIT 1
+                LIMIT 1) AS Most_activities_year, 
             """
-
-    cursor.execute(query_a)
-    rows_a = cursor.fetchall()
-
-    query_printer(query_number="6a", rows=rows_a,
-                        column_names=cursor.column_names)
-
-    # b) Find year with most recorded hours
     query_b = """
-                SELECT YEAR(start_date_time) AS Year
+                (SELECT YEAR(start_date_time) AS Year
                 FROM Activity
                 WHERE YEAR(end_date_time) = YEAR(start_date_time)
                 GROUP BY Year
                 ORDER BY ROUND(SUM(TIMEDIFF(end_date_time, start_date_time)) / 3600) DESC
-                LIMIT 1
+                LIMIT 1) AS Most_hours_year, 
             """
-    cursor.execute(query_b)
-    rows_b = cursor.fetchall()
 
-    query_printer(query_number="6b", rows=rows_b,
-                        column_names=cursor.column_names)
+    query_c = """
+                (SELECT IF(Most_activities_year = Most_hours_year, "Yes", "No")) 
+                    AS Years_are_equal
+            """
 
-    is_or_is_not = "IS" if rows_a[0][0] == rows_b[0][0] else "is NOT"
-    print("6b) The year with most activities",
-            is_or_is_not, "the year with most recorded hours")
+
+    cursor.execute("SELECT " + query_a + query_b + query_c)
+    rows = cursor.fetchall()
+    print_query_result(query_number="6", rows=rows, column_names=cursor.column_names)
+
 
 def query_7(cursor):
     query = """SELECT
@@ -131,7 +128,7 @@ def query_7(cursor):
     cursor.execute(query)
     rows = cursor.fetchall()
 
-    query_printer(query_number="7", rows=rows,
+    print_query_result(query_number="7", rows=rows,
                         column_names=cursor.column_names)
 
 def query_8(cursor):
@@ -155,7 +152,7 @@ def query_8(cursor):
     cursor.execute(query)
     rows = cursor.fetchall()
 
-    query_printer(query_number="8", rows=rows,
+    print_query_result(query_number="8", rows=rows,
                         column_names=cursor.column_names)
 
 def query_9(cursor):
@@ -175,7 +172,7 @@ def query_9(cursor):
     cursor.execute(query)
     rows = cursor.fetchall()
 
-    query_printer(query_number="9", rows=rows,
+    print_query_result(query_number="9", rows=rows,
                         column_names=cursor.column_names)
 
 def query_10(cursor):
@@ -198,7 +195,7 @@ def query_10(cursor):
     cursor.execute(query)
     rows = cursor.fetchall()
 
-    query_printer(query_number=10, rows=rows,
+    print_query_result(query_number=10, rows=rows,
                         column_names=cursor.column_names)
 
 def query_11(cursor):
@@ -222,14 +219,14 @@ def query_11(cursor):
     cursor.execute(query)
     rows = cursor.fetchall()
 
-    query_printer(query_number=11, rows=rows, column_names=cursor.column_names)
-
-
-def main():
-    connector = DbConnector()
-    with connector as cursor:
-        for query in [query_1, query_2, query_3, query_4, query_5, query_6, query_7, query_8, query_9, query_10, query_11]:
-            query(cursor)
+    print_query_result(query_number=11, rows=rows, column_names=cursor.column_names)
+          
 
 if __name__ == '__main__':
-    main()
+    connector = DbConnector()
+    module_funcs = getmembers(sys.modules[__name__])
+    query_funcs = filter(lambda t: t[0].startswith("query_"), module_funcs)
+    query_funcs = map(itemgetter(1), query_funcs)
+    with connector as cursor:
+        for query in query_funcs:
+            query(cursor)

@@ -20,7 +20,7 @@ sudo service mysql restart
 
 # Fiks python
 sudo apt-get upgrade python3
-sudo apt installpython3-pip
+sudo apt install python3-pip
 python3 -m pip install virtualenv
 python3 -m virtualenv venv
 . venv/bin/activate
