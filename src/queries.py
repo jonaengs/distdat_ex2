@@ -143,4 +143,4 @@ if __name__ == '__main__':
             cursor.execute(query)
             rows = cursor.fetchall()
             print(f"Query {i}:\n\n" +
-                  tabulate(rows, headers=cursor.column_names) + "\n")
+                  tabulate(rows, headers=cursor.column_names) + "\n\n")
